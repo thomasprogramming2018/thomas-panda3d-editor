@@ -1,0 +1,11 @@
+numpy==1.26.4
+Panda3D==1.10.14
+panda3d-blend2bam==0.25.0
+panda3d-complexpbr==0.5.3
+panda3d-gltf==1.1.0
+panda3d-simplepbr==0.12.0
+pillow==10.3.0
+py-slvs==1.0.6
+six==1.16.0
+typing_extensions==4.11.0
+wxPython==4.2.1
