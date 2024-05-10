@@ -2226,7 +2226,7 @@ class NodePanel(wx.Panel):
             # Create a list box with the filenames
             self.combo_box = wx.ComboBox(panel, choices=files, style=wx.CB_READONLY)
 
-            self.button_create = wx.Button(self.panel, label="Create New Python File")
+            self.button_create = wx.Button(panel, label="Create New Python File")
 
             # Create a sizer for the panel
             sizer4 = wx.BoxSizer(wx.VERTICAL)
@@ -2237,7 +2237,7 @@ class NodePanel(wx.Panel):
             self.combo_box.Bind(wx.EVT_LISTBOX, self.on_select)
             self.combo_box.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.on_dropdown)
             sizer4.Add(self.button_create, 0, wx.EXPAND | wx.ALL, 5)
-            panel.SetSizer(self.sizer)
+            panel.SetSizer(sizer4)
 
             # Set sizer for the panel
             
