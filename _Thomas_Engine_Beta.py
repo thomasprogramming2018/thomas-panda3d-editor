@@ -50,7 +50,7 @@ class PandaViewport(wx.Panel):
     def __init__(self, *args, **kwargs):
         wx.Panel.__init__(self, *args, **kwargs)
         # See __doc__ of initialize() for this callback
-        self.loaded_models = {"environment.egg(0000)" : "environment.egg(0000)"}
+        self.loaded_models = {}
         self.GetTopLevelParent().Bind(wx.EVT_SHOW, self.onShow)
 
     def onShow(self, event):
@@ -214,8 +214,10 @@ class PandaViewport(wx.Panel):
             if request == "focus":
                 self.SetFocus()
             #if not None in request:
-            elif request[0] == "Load":
+            if request[0] == "Load":
+                
                 model_name = request[1]
+                print(model_name)
                 # Update your data structure (e.g., a list or dictionary)
                 # in PandaViewport to reflect the loaded model
                 self.loaded_models = model_name
@@ -1114,7 +1116,7 @@ class Panda3dApp(object):
         shadowCameraDrawMask = BitMask32.bit(2)
         g.hide(shadowCameraDrawMask)
         g.reparentTo(render)
-        self.loaded_models["camera2.bam(0001)"] = g
+        self.loaded_models["camera2.egg(0001)"] = g
 
         
         # Create a new camera
@@ -1140,7 +1142,7 @@ class Panda3dApp(object):
         #my_hdri = loader.loadCubeMap("c:/Users/user/Desktop/SimpleThirdPersonCamera-main/hdri/hdri.hdr")
         #my_hdri.reparentTo(render)
 
-        self.pipe.send(["Load", self.loaded_models, "DemoModels/MyTradis.bam(0000)", "MyTradis.bam(0000)"])
+        self.pipe.send(["Load", self.loaded_models, "DemoModels/smithai/smith.bam(0000)", "smith.bam(0000)"])
         self.pipe.send(["Load", self.loaded_models, "models/camera2.egg(0001)", "camera2.egg(0001)"])
         s.setY(20)
     def create_camera_fov_cone(self, camera, fov_angle, num_segments=16, length=10):
@@ -2143,7 +2145,7 @@ class NodePanel(wx.Panel):
 
             self.SetSizer(self.sizer2)
         
-        elif node_id == "Precondition switch":
+        elif node_id == "Condition switch":
             
             self.sizer2 = wx.GridSizer(rows=15, cols=2, vgap=1, hgap=1)
             
@@ -2177,7 +2179,7 @@ class NodePanel(wx.Panel):
             self.output_source = wx.StaticText(self, label="output source")
             
             self.output_ctrl = wx.TextCtrl(self, value=output_value)
-            self.precondition_dict = {"input1": self.input_ctrl.GetValue(), "input2": self.input_ctrl2.GetValue(), "input3": self.input_ctrl3.GetValue(), "input4": self.input_ctrl4.GetValue(), "input5": self.input_ctrl5.GetValue(),
+            self.condition_dict = {"input1": self.input_ctrl.GetValue(), "input2": self.input_ctrl2.GetValue(), "input3": self.input_ctrl3.GetValue(), "input4": self.input_ctrl4.GetValue(), "input5": self.input_ctrl5.GetValue(),
                                   "input6": self.input_ctrl6.GetValue(), "input7": self.input_ctrl7.GetValue(), "input8": self.input_ctrl8.GetValue(), "input9": self.input_ctrl9.GetValue(), "input10": self.input_ctrl10.GetValue(),
                                     "input11": self.input_ctrl11.GetValue(), "input12": self.input_ctrl12.GetValue()}
 
@@ -2212,6 +2214,29 @@ class NodePanel(wx.Panel):
             self.sizer2.Add(self.output_ctrl, 0, wx.EXPAND | wx.ALL, 5)
 
             self.SetSizer(self.sizer2)
+        elif node_id == "onPrecondition":
+            panel = wx.Panel(self)
+            self.title = wx.StaticText(panel, label=node_id)
+            self.sizer3 = wx.BoxSizer(wx.VERTICAL)
+            self.sizer3.Add(self.title, 0, wx.EXPAND | wx.ALL, 5)
+            self.input = wx.StaticText(panel, label="input 1")
+            self.input_ctrl = wx.TextCtrl(panel, value=input_value)
+            self.input1 = wx.StaticText(panel, label="input 2")
+            self.input_ctrl1 = wx.TextCtrl(panel, value=input_value)
+            self.input2 = wx.StaticText(panel, label="input 3")
+            self.input_ctrl2 = wx.TextCtrl(panel, value=input_value)
+            self.input3 = wx.StaticText(panel, label="input 4")
+            self.input_ctrl3 = wx.TextCtrl(panel, value=input_value)
+            self.sizer3.Add(self.input_ctrl, 0, wx.EXPAND | wx.ALL, 5)
+            self.sizer3.Add(self.input_ctrl1, 0, wx.EXPAND | wx.ALL, 5)
+            self.sizer3.Add(self.input_ctrl2, 0, wx.EXPAND | wx.ALL, 5)
+            self.sizer3.Add(self.input_ctrl3, 0, wx.EXPAND | wx.ALL, 5)
+            
+            self.output_ctrl = wx.TextCtrl(panel, value=output_value)
+            self.sizer3.Add(self.output_ctrl, 0, wx.EXPAND | wx.ALL, 5)
+            output_value = self.output_ctrl.GetValue()
+            self.SetSizer(self.sizer3)
+            self.onPreCondition_dict = {"input1": self.input_ctrl.GetValue(), "input2": self.input_ctrl1.GetValue(), "input3": self.input_ctrl2.GetValue(), "input4": self.input_ctrl3.GetValue()}
         elif node_id == "Action":
             panel = wx.Panel(self)
             #self.sizer3 = wx.BoxSizer(wx.VERTICAL)
@@ -2247,6 +2272,7 @@ class NodePanel(wx.Panel):
             self.button_create.Bind(wx.EVT_BUTTON, self.on_create_file)
 
             self.Show()
+            
 
             # Show the frame
             #self.Show()
@@ -2424,8 +2450,8 @@ class AIEditor(wx.ScrolledWindow):
         menu.Destroy()
 
     def add_node_submenu(self, submenu):
-        nodes = ["brain jar", "follow object", "run away", "Perform Custom Function", "Precondition switch", "Precondition tree", "animation",
-                  "behavior Properties", "Action", "FailIfPrecondition", "OnPrecondition"]
+        nodes = ["brain jar", "follow object", "run away", "Perform Custom Function", "Condition switch", "Precondition tree", "animation",
+                  "behavior Properties", "Action", "FailIfPrecondition", "OnPrecondition", "Reasoner", "option"]
         for node_id in nodes:  # Assuming there are 5 node options
             node_item = submenu.Append(wx.ID_ANY, f"Node {node_id}")
             
@@ -2944,18 +2970,25 @@ class objectslist(wx.Panel):
             
     def refresh_list(self):
         global assigned_scripts
+        global object_properties
         #self.model_list.DeleteAllItems()
         self.model_list.DeleteChildren(self.root)
+        
 
         # Add loaded models to the tree
-        for model in p.loaded_models:
+        for model in p.loaded_models.keys():
+            print("model is: ", model)
             unique_key = model
             item = self.model_list.AppendItem(self.root, os.path.basename(model))
             self.model_list.SetItemData(item, model)
             self.model_name_not_p[unique_key] = model
             self.model_name[os.path.basename(model)] = model
+            
+            if os.path.basename(model) not in object_properties:
+                object_properties[os.path.basename(model)] = {'strings': {}, 'integers': {}, 'booleans': {}}
             if os.path.basename(model) not in assigned_scripts:
-                assigned_scripts[os.path.basename(model)] = []
+                assigned_scripts[os.path.basename(model)] = object_properties[os.path.basename(model)] 
+            print(assigned_scripts)
     def on_load_button(self, event):
         # Open user's default file open dialog with appropriate filters
         script_dir = os.path.dirname(__file__)
@@ -3096,7 +3129,8 @@ import {r}\
             print(model)
             
             self.remove_object(scene_data, f'{os.path.basename(model)}')
-            self.add_object(scene_data, f'{os.path.basename(model)}', f'{self.remove_last_six_digits(model)}', [3, 0, 0], [0, 0, 0], [1, 1, 1], assigned_scripts[os.path.basename(self.remove_last_six_digits(model))], object_properties[os.path.basename(self.remove_last_six_digits(model))])
+            print("assigned scripts: ", assigned_scripts)
+            self.add_object(scene_data, f'{os.path.basename(model)}', f'{self.remove_last_six_digits(model)}', [3, 0, 0], [0, 0, 0], [1, 1, 1], assigned_scripts[os.path.basename(model)], object_properties[os.path.basename(model)])
         #self.update_object(scene_data, 'cube', position=[1, 2, 3])
         #self.remove_object(scene_data, 'sphere')
 
